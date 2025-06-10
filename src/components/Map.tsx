@@ -1,6 +1,8 @@
-import { useCallback } from "react";
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { useCallback, useState } from "react";
+import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import type { Trip } from "../types/trip";
+import { StopMarker } from "./StopMarker";
+import { BusMarker } from "./BusMarker";
 
 const containerStyle = {
   width: "100%",
@@ -12,6 +14,11 @@ interface MapProps {
 }
 
 export const Map = ({ trip }: MapProps) => {
+  const [hoveredStop, setHoveredStop] = useState<number | null>(null);
+  const [hoveredBus, setHoveredBus] = useState(false);
+
+  console.log("Map rendering with trip:", trip);
+
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
@@ -22,9 +29,24 @@ export const Map = ({ trip }: MapProps) => {
     console.error("Error loading Google Maps:", loadError);
   }
 
-  const onLoad = useCallback((map: google.maps.Map) => {
-    console.log("Map loaded successfully", map);
-  }, []);
+  const onLoad = useCallback(
+    (map: google.maps.Map) => {
+      console.log("Map loaded successfully", map);
+
+      // Fit bounds to include all stops
+      const bounds = new google.maps.LatLngBounds();
+      trip.route.forEach((stop) => {
+        bounds.extend({
+          lat: stop.location.lat,
+          lng: stop.location.lon,
+        });
+      });
+
+      // Add padding to bounds
+      map.fitBounds(bounds, 50);
+    },
+    [trip.route]
+  );
 
   const onUnmount = useCallback(() => {
     // Cleanup if needed
@@ -35,17 +57,28 @@ export const Map = ({ trip }: MapProps) => {
     return <div>Loading...</div>;
   }
 
-  // Use the first stop's location as the center of the map
-  const center = {
-    lat: trip.route[0].location.lat,
-    lng: trip.route[0].location.lon,
-  };
+  // Get bus position
+  const busPosition = trip.vehicle.gps
+    ? {
+        lat: trip.vehicle.gps.latitude,
+        lng: trip.vehicle.gps.longitude,
+      }
+    : null;
+
+  console.log("Bus position:", busPosition);
+  console.log("Number of stops:", trip.route.length);
+
+  // Calculate delay if available
+  const currentStop = trip.route.find((stop) => stop.departure.estimated);
+  const delay =
+    currentStop?.departure.estimated && currentStop?.departure.scheduled
+      ? new Date(currentStop.departure.estimated).getTime() -
+        new Date(currentStop.departure.scheduled).getTime()
+      : 0;
 
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
-      zoom={13}
       onLoad={onLoad}
       onUnmount={onUnmount}
       options={{
@@ -56,28 +89,35 @@ export const Map = ({ trip }: MapProps) => {
             stylers: [{ visibility: "off" }],
           },
         ],
+        gestureHandling: "greedy",
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
       }}
     >
       {/* Render stop markers */}
-      {trip.route.map((stop) => (
-        <Marker
+      {trip.route.map((stop, index) => (
+        <StopMarker
           key={stop.id}
-          position={{
-            lat: stop.location.lat,
-            lng: stop.location.lon,
-          }}
-          title={stop.location.name}
+          stop={stop}
+          isHovered={hoveredStop === index}
+          onMouseOver={() => setHoveredStop(index)}
+          onMouseOut={() => setHoveredStop(null)}
         />
       ))}
 
       {/* Render bus marker */}
-      <Marker
-        position={{
-          lat: trip.vehicle.gps.latitude,
-          lng: trip.vehicle.gps.longitude,
-        }}
-        title={`Bus ${trip.vehicle.plate_number}`}
-      />
+      {busPosition && (
+        <BusMarker
+          position={busPosition}
+          vehicle={trip.vehicle}
+          isHovered={hoveredBus}
+          onMouseOver={() => setHoveredBus(true)}
+          onMouseOut={() => setHoveredBus(false)}
+          delay={delay}
+        />
+      )}
     </GoogleMap>
   );
 };

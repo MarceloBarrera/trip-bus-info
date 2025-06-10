@@ -16,10 +16,11 @@ export interface Location {
   atco_code: string;
   has_future_activity: boolean;
   timezone: string;
-  area_id: number;
+  area_id?: number;
   google_place_id?: string;
   direction?: string;
   local_name?: string;
+  hub_id?: number;
 }
 
 export interface Stop {
@@ -27,12 +28,12 @@ export interface Stop {
   departure: {
     scheduled: string;
     actual?: string;
-    estimated: string;
+    estimated?: string;
   };
   arrival: {
     scheduled: string;
     actual?: string;
-    estimated: string;
+    estimated?: string;
   };
   location: Location;
   allow_boarding: boolean;

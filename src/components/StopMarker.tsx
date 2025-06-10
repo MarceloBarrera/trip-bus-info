@@ -1,5 +1,6 @@
 import { OverlayView } from "@react-google-maps/api";
 import type { Stop } from "../types/trip";
+import { InfoPanel } from "./InfoPanel";
 
 interface StopMarkerProps {
   stop: Stop;
@@ -36,37 +37,22 @@ export const StopMarker = ({ stop, isHovered, onMouseOver, onMouseOut }: StopMar
       </OverlayView>
 
       {isHovered && (
-        <OverlayView
+        <InfoPanel
           position={{
             lat: stop.location.lat,
             lng: stop.location.lon,
           }}
-          mapPaneName={OverlayView.FLOAT_PANE}
         >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "12px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-              minWidth: "200px",
-              border: "1px solid #E0E0E0",
-              pointerEvents: "none",
-              transform: "translate(-50%, -100%)",
-              marginTop: "-10px",
-            }}
-          >
-            <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{stop.location.name}</div>
-            <div style={{ fontSize: "13px", color: "#666" }}>
-              Scheduled: {new Date(stop.departure.scheduled).toLocaleTimeString()}
-            </div>
-            {stop.departure.estimated && (
-              <div style={{ fontSize: "13px", color: "#666" }}>
-                Estimated: {new Date(stop.departure.estimated).toLocaleTimeString()}
-              </div>
-            )}
+          <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{stop.location.name}</div>
+          <div style={{ fontSize: "13px", color: "#666" }}>
+            Scheduled: {new Date(stop.departure.scheduled).toLocaleTimeString()}
           </div>
-        </OverlayView>
+          {stop.departure.estimated && (
+            <div style={{ fontSize: "13px", color: "#666" }}>
+              Estimated: {new Date(stop.departure.estimated).toLocaleTimeString()}
+            </div>
+          )}
+        </InfoPanel>
       )}
     </div>
   );

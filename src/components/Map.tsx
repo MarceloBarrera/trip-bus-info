@@ -12,21 +12,28 @@ interface MapProps {
 }
 
 export const Map = ({ trip }: MapProps) => {
-  const { isLoaded } = useJsApiLoader({
+  const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
   });
 
+  // Log any loading errors
+  if (loadError) {
+    console.error("Error loading Google Maps:", loadError);
+  }
+
   const onLoad = useCallback((map: google.maps.Map) => {
-    // We'll use this later for custom controls and interactions
-    console.log("Map loaded:", map);
+    console.log("Map loaded successfully", map);
   }, []);
 
   const onUnmount = useCallback(() => {
     // Cleanup if needed
   }, []);
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded) {
+    console.log("Map is still loading...");
+    return <div>Loading...</div>;
+  }
 
   // Use the first stop's location as the center of the map
   const center = {

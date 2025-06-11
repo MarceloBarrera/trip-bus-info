@@ -3,10 +3,12 @@ import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import type { Trip } from "../types/trip";
 import { StopMarker } from "./StopMarker";
 import { BusMarker } from "./BusMarker";
+import { Header } from "./Header";
 
 const containerStyle = {
   width: "100%",
   height: "100vh",
+  marginTop: "0", // Will be adjusted by the header
 };
 
 interface MapProps {
@@ -77,47 +79,72 @@ export const Map = ({ trip }: MapProps) => {
       : 0;
 
   return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
-      options={{
-        styles: [
-          {
-            featureType: "poi",
-            elementType: "labels",
-            stylers: [{ visibility: "off" }],
-          },
-        ],
-        gestureHandling: "greedy",
-        zoomControl: true,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-      }}
-    >
-      {/* Render stop markers */}
-      {trip.route.map((stop, index) => (
-        <StopMarker
-          key={stop.id}
-          stop={stop}
-          isHovered={hoveredStop === index}
-          onMouseOver={() => setHoveredStop(index)}
-          onMouseOut={() => setHoveredStop(null)}
-        />
-      ))}
+    <div style={{ height: "100%", width: "100%" }}>
+      <Header title="trip map" />
+      <div
+        style={{
+          height: "calc(100% - 48px)", // Subtract header height and extra space for controls
+          width: "100%",
+          marginTop: "48px", // Space for header
+        }}
+      >
+        <GoogleMap
+          mapContainerStyle={{
+            ...containerStyle,
+            height: "100%", // Use full height of parent
+          }}
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+          options={{
+            styles: [
+              {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }],
+              },
+            ],
+            gestureHandling: "greedy",
 
-      {/* Render bus marker */}
-      {busPosition && (
-        <BusMarker
-          position={busPosition}
-          vehicle={trip.vehicle}
-          isHovered={hoveredBus}
-          onMouseOver={() => setHoveredBus(true)}
-          onMouseOut={() => setHoveredBus(false)}
-          delay={delay}
-        />
-      )}
-    </GoogleMap>
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+              position: google.maps.ControlPosition.TOP_RIGHT,
+              style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+            },
+            zoomControl: true,
+            zoomControlOptions: {
+              position: google.maps.ControlPosition.TOP_RIGHT,
+            },
+            streetViewControl: false,
+            fullscreenControl: true,
+            fullscreenControlOptions: {
+              position: google.maps.ControlPosition.RIGHT_BOTTOM,
+            },
+          }}
+        >
+          {/* Render stop markers */}
+          {trip.route.map((stop, index) => (
+            <StopMarker
+              key={stop.id}
+              stop={stop}
+              isHovered={hoveredStop === index}
+              onMouseOver={() => setHoveredStop(index)}
+              onMouseOut={() => setHoveredStop(null)}
+            />
+          ))}
+
+          {/* Render bus marker */}
+          {busPosition && (
+            <BusMarker
+              position={busPosition}
+              vehicle={trip.vehicle}
+              isHovered={hoveredBus}
+              onMouseOver={() => setHoveredBus(true)}
+              onMouseOut={() => setHoveredBus(false)}
+              delay={delay}
+            />
+          )}
+        </GoogleMap>
+      </div>
+    </div>
   );
 };

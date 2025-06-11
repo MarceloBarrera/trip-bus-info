@@ -17,9 +17,10 @@ const libraries: "geometry"[] = ["geometry"];
 
 interface MapProps {
   trip: Trip;
+  isBusLocationOutdated: boolean;
 }
 
-export const Map = ({ trip }: MapProps) => {
+export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
   const [hoveredStop, setHoveredStop] = useState<number | null>(null);
   const [hoveredBus, setHoveredBus] = useState(false);
   const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService | null>(
@@ -105,6 +106,30 @@ export const Map = ({ trip }: MapProps) => {
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
+      {isBusLocationOutdated && (
+        <div
+          style={{
+            position: "absolute",
+            top: "60px", // Position below header
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#fff3cd",
+            color: "#856404",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            zIndex: 1000,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            textAlign: "center",
+            maxWidth: "80%",
+          }}
+        >
+          <strong>⚠️ Location may be outdated</strong>
+          <p style={{ margin: "5px 0 0 0", fontSize: "0.9em" }}>
+            The bus location hasn't been updated in over 5 minutes. The position shown may not be
+            current.
+          </p>
+        </div>
+      )}
       <Header title="trip map" />
       <div
         style={{

@@ -25,6 +25,10 @@ function TripMap() {
   const tripId = searchParams.get("id") || "GrnisKd8ABak8d5Lxigqsh"; // fallback to default ID
   const { data: trip, isLoading, error } = useTripData(tripId);
 
+  const isBusLocationOutdated = trip?.vehicle?.gps?.last_updated
+    ? (new Date().getTime() - new Date(trip.vehicle.gps.last_updated).getTime()) / (1000 * 60) > 5
+    : false;
+
   if (isLoading) return <div>Loading...</div>;
   if (error)
     return (
@@ -41,7 +45,7 @@ function TripMap() {
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <Map trip={trip} />
+      <Map trip={trip} isBusLocationOutdated={isBusLocationOutdated} />
     </div>
   );
 }

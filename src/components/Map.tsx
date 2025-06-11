@@ -4,12 +4,16 @@ import type { Trip } from "../types/trip";
 import { StopMarker } from "./StopMarker";
 import { BusMarker } from "./BusMarker";
 import { Header } from "./Header";
+import { RouteLine } from "./RouteLine";
 
 const containerStyle = {
   width: "100%",
   height: "100vh",
   marginTop: "0", // Will be adjusted by the header
 };
+
+// Google Maps loader options
+const libraries: "geometry"[] = ["geometry"];
 
 interface MapProps {
   trip: Trip;
@@ -18,45 +22,69 @@ interface MapProps {
 export const Map = ({ trip }: MapProps) => {
   const [hoveredStop, setHoveredStop] = useState<number | null>(null);
   const [hoveredBus, setHoveredBus] = useState(false);
-
-  console.log("Map rendering with trip:", trip);
+  const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService | null>(
+    null
+  );
+  const [directionsRenderer, setDirectionsRenderer] =
+    useState<google.maps.DirectionsRenderer | null>(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+    libraries,
   });
-
-  // Log any loading errors
-  if (loadError) {
-    console.error("Error loading Google Maps:", loadError);
-  }
 
   const onLoad = useCallback(
     (map: google.maps.Map) => {
-      console.log("Map loaded successfully", map);
-
-      // Fit bounds to include all stops
-      const bounds = new google.maps.LatLngBounds();
-      trip.route.forEach((stop) => {
-        bounds.extend({
-          lat: stop.location.lat,
-          lng: stop.location.lon,
+      try {
+        // Initialize directions service and renderer
+        const service = new google.maps.DirectionsService();
+        const renderer = new google.maps.DirectionsRenderer({
+          map,
+          suppressMarkers: true, // We'll use our own markers
         });
-      });
 
-      // Add padding to bounds
-      map.fitBounds(bounds, 50);
+        setDirectionsService(service);
+        setDirectionsRenderer(renderer);
+
+        // Fit bounds to include all stops
+        const bounds = new google.maps.LatLngBounds();
+        trip.route.forEach((stop) => {
+          bounds.extend({
+            lat: stop.location.lat,
+            lng: stop.location.lon,
+          });
+        });
+
+        // Add padding to bounds
+        map.fitBounds(bounds, 50);
+      } catch (error) {
+        console.error("Error initializing directions service:", error);
+      }
     },
     [trip.route]
   );
 
   const onUnmount = useCallback(() => {
-    // Cleanup if needed
-  }, []);
+    // Cleanup
+    if (directionsRenderer) {
+      directionsRenderer.setMap(null);
+    }
+  }, [directionsRenderer]);
+
+  if (loadError) {
+    console.error("Error loading Google Maps:", loadError);
+    return (
+      <div style={{ padding: "20px", color: "red" }}>
+        Error loading Google Maps - Please try again later.
+        <br />
+        If the problem persists, please contact support.
+      </div>
+    );
+  }
 
   if (!isLoaded) {
-    console.log("Map is still loading...");
-    return <div>Loading...</div>;
+    return <div style={{ padding: "20px" }}>Loading Google Maps...</div>;
   }
 
   // Get bus position
@@ -66,9 +94,6 @@ export const Map = ({ trip }: MapProps) => {
         lng: trip.vehicle.gps.longitude,
       }
     : null;
-
-  console.log("Bus position:", busPosition);
-  console.log("Number of stops:", trip.route.length);
 
   // Calculate delay if available
   const currentStop = trip.route.find((stop) => stop.departure.estimated);
@@ -104,7 +129,6 @@ export const Map = ({ trip }: MapProps) => {
               },
             ],
             gestureHandling: "greedy",
-
             mapTypeControl: true,
             mapTypeControlOptions: {
               position: google.maps.ControlPosition.TOP_RIGHT,
@@ -121,6 +145,15 @@ export const Map = ({ trip }: MapProps) => {
             },
           }}
         >
+          {/* Render route line */}
+          {directionsService && directionsRenderer && (
+            <RouteLine
+              route={trip.route}
+              directionsService={directionsService}
+              directionsRenderer={directionsRenderer}
+            />
+          )}
+
           {/* Render stop markers */}
           {trip.route.map((stop, index) => (
             <StopMarker

@@ -199,6 +199,7 @@ export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
               onMouseOver={() => setHoveredBus(true)}
               onMouseOut={() => setHoveredBus(false)}
               delay={delay}
+              route={trip.route}
             />
           )}
         </GoogleMap>

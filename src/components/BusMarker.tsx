@@ -1,5 +1,5 @@
 import { OverlayView } from "@react-google-maps/api";
-import type { Vehicle } from "../types/trip";
+import type { Vehicle, Stop } from "../types/trip";
 import { InfoPanel } from "./InfoPanel";
 
 interface BusMarkerProps {
@@ -12,6 +12,7 @@ interface BusMarkerProps {
   onMouseOver: () => void;
   onMouseOut: () => void;
   delay: number;
+  route: Stop[];
 }
 
 export const BusMarker = ({
@@ -21,7 +22,15 @@ export const BusMarker = ({
   onMouseOver,
   onMouseOut,
   delay,
+  route,
 }: BusMarkerProps) => {
+  const origin = route[0];
+  const destination = route[route.length - 1];
+  const departureTime = new Date(origin.departure.scheduled).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <div>
       <OverlayView position={position} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
@@ -45,6 +54,9 @@ export const BusMarker = ({
       {isHovered && (
         <InfoPanel position={position}>
           <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{vehicle.name}</div>
+          <div style={{ fontSize: "13px", color: "#333", marginBottom: "4px" }}>
+            {departureTime} from {origin.location.name} to {destination.location.name}
+          </div>
           <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
             Type: {vehicle.type}
           </div>

@@ -1,6 +1,6 @@
 import { OverlayView } from "@react-google-maps/api";
 import type { Vehicle, Stop } from "../types/trip";
-import { InfoPanel } from "./InfoPanel";
+import { InfoPanel } from "./InfoPanel/InfoPanel";
 
 interface BusMarkerProps {
   position: {

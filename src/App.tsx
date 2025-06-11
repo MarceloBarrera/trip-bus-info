@@ -1,5 +1,5 @@
 import "./App.css";
-import { Map } from "./components/Map";
+import { Map } from "./components/Map/Map";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";

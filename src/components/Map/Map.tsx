@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
-import type { Trip } from "../types/trip";
-import { StopMarker } from "./StopMarker";
-import { BusMarker } from "./BusMarker";
-import { Header } from "./Header";
-import { RouteLine } from "./RouteLine";
+import type { Trip } from "../../types/trip";
+import { StopMarker } from "../StopMarker";
+import { BusMarker } from "../BusMarker";
+import { Header } from "../Header";
+import { RouteLine } from "../RouteLine";
 
 const containerStyle = {
   width: "100%",

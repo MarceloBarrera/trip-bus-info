@@ -11,8 +11,8 @@ const queryClient = new QueryClient({
       retry: (failureCount) => {
         // Only retry if we're online
         if (!navigator.onLine) return false;
-        // Retry up to 3 times
-        return failureCount < 3;
+        // Retry up to 2 times
+        return failureCount < 2;
       },
       networkMode: "offlineFirst", // Try to use cached data when offline
     },
@@ -26,7 +26,23 @@ function useTripData(tripId: string) {
     queryFn: async () => {
       const response = await fetch(`https://api.ember.to/v1/trips/${tripId}`);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        let errorMessage = "Error loading trip data";
+
+        switch (response.status) {
+          case 403:
+            errorMessage = "Access denied. You don't have permission to view this trip.";
+            break;
+          case 404:
+            errorMessage = "Trip not found. Please check the trip ID.";
+            break;
+          case 500:
+            errorMessage = "Server error. Please try again later.";
+            break;
+          default:
+            errorMessage = "Error loading trip data. Please try again.";
+        }
+
+        throw new Error(errorMessage);
       }
       return response.json();
     },
@@ -62,7 +78,7 @@ function OfflineMessage() {
 function TripMap() {
   const [searchParams] = useSearchParams();
   const tripId = searchParams.get("id") || "GrnisKd8ABak8d5Lxigqsh"; // fallback to default ID
-  const { data: trip, isLoading, isError } = useTripData(tripId);
+  const { data: trip, isLoading, isError, error } = useTripData(tripId);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
@@ -82,11 +98,15 @@ function TripMap() {
     ? (new Date().getTime() - new Date(trip.vehicle.gps.last_updated).getTime()) / (1000 * 60) > 5
     : false;
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError && !isOffline)
+  if (isLoading) return <div>Loading trip data...</div>;
+  if (isError)
     return (
-      <div>
-        Error loading trip data - please try again later or go to the <a href="/">home page</a>
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <h2>Error</h2>
+        <p>{error instanceof Error ? error.message : "Error loading trip data"}</p>
+        <p>
+          Go to <a href="https://www.ember.to/">home page</a>
+        </p>
       </div>
     );
   if (!trip && !isOffline)

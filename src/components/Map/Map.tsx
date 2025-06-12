@@ -132,6 +132,7 @@ export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
       )}
       <Header title="trip map" />
       <div
+        data-testid="map-container"
         style={{
           height: "calc(100% - 48px)", // Subtract header height and extra space for controls
           width: "100%",

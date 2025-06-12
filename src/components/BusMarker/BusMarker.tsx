@@ -1,6 +1,6 @@
 import { OverlayView } from "@react-google-maps/api";
-import type { Vehicle, Stop } from "../types/trip";
-import { InfoPanel } from "./InfoPanel/InfoPanel";
+import type { Vehicle, Stop } from "../../types/trip";
+import { InfoPanel } from "../InfoPanel/InfoPanel";
 
 interface BusMarkerProps {
   position: {
@@ -35,6 +35,7 @@ export const BusMarker = ({
     <div>
       <OverlayView position={position} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
         <div
+          data-testid="bus-marker"
           style={{
             width: "24px",
             height: "24px",

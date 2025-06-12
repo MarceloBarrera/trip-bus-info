@@ -20,6 +20,7 @@ export const StopMarker = ({ stop, isHovered, onMouseOver, onMouseOut }: StopMar
         mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
       >
         <div
+          data-testid="stop-marker"
           style={{
             width: "24px",
             height: "24px",

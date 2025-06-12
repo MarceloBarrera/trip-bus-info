@@ -13,5 +13,11 @@ export default defineConfig(({ mode }) => {
     define: {
       "import.meta.env.VITE_GOOGLE_MAPS_API_KEY": JSON.stringify(env.VITE_GOOGLE_MAPS_API_KEY),
     },
+    test: {
+      globals: true,
+      environment: "jsdom",
+      setupFiles: "./src/test/setup.ts",
+      coverage: { provider: "v8", reporter: ["text", "json", "html"] },
+    },
   };
 });

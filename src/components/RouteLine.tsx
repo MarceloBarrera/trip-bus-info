@@ -80,7 +80,7 @@ export const RouteLine = ({ route, directionsService, directionsRenderer }: Rout
 
   return (
     <>
-      <Polyline path={routePath} options={routeLineOptions} />
+      <Polyline path={routePath} options={routeLineOptions} data-testid="route-line" />
       {error && (
         <div
           style={{

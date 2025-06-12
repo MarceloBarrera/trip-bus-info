@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 import type { Trip } from "../../types/trip";
 import { StopMarker } from "../StopMarker";
-import { BusMarker } from "../BusMarker";
+import { BusMarker } from "../BusMarker/BusMarker";
 import { Header } from "../Header";
 import { RouteLine } from "../RouteLine";
 
@@ -123,7 +123,7 @@ export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
             maxWidth: "80%",
           }}
         >
-          <strong>⚠️ Location may be outdated</strong>
+          <strong>⚠️ Bus location may be outdated</strong>
           <p style={{ margin: "5px 0 0 0", fontSize: "0.9em" }}>
             The bus location hasn't been updated in over 5 minutes. The position shown may not be
             current.

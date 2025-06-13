@@ -8,7 +8,24 @@ interface StopMarkerProps {
   onMouseOver: () => void;
   onMouseOut: () => void;
   nextStop?: Stop;
+  isFirstStop?: boolean;
+  isLastStop?: boolean;
 }
+
+const getBackgroundColor = ({
+  isFirstStop,
+  isLastStop,
+  isHovered,
+}: {
+  isFirstStop: boolean;
+  isLastStop: boolean;
+  isHovered: boolean;
+}): string => {
+  if (isFirstStop) return "#9C27B0";
+  if (isLastStop) return "#FF9800";
+  if (isHovered) return "#2E5CB8";
+  return "#4A90E2";
+};
 
 export const StopMarker = ({
   stop,
@@ -16,6 +33,8 @@ export const StopMarker = ({
   onMouseOver,
   onMouseOut,
   nextStop,
+  isFirstStop,
+  isLastStop,
 }: StopMarkerProps) => {
   return (
     <div>
@@ -32,7 +51,11 @@ export const StopMarker = ({
             width: "24px",
             height: "24px",
             borderRadius: "50%",
-            backgroundColor: isHovered ? "#2E5CB8" : "#4A90E2",
+            backgroundColor: getBackgroundColor({
+              isFirstStop: !!isFirstStop,
+              isLastStop: !!isLastStop,
+              isHovered,
+            }),
             border: "2px solid white",
             cursor: "pointer",
             boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
@@ -51,7 +74,17 @@ export const StopMarker = ({
             lng: stop.location.lon,
           }}
         >
-          <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{stop.location.name}</div>
+          <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
+            {stop.location.name}
+            {isFirstStop && (
+              <span style={{ marginLeft: "8px", color: "#9C27B0", fontSize: "0.9em" }}>
+                (Start)
+              </span>
+            )}
+            {isLastStop && (
+              <span style={{ marginLeft: "8px", color: "#FF9800", fontSize: "0.9em" }}>(End)</span>
+            )}
+          </div>
           <div style={{ fontSize: "13px", color: "#666" }}>
             Scheduled: {new Date(stop.departure.scheduled).toLocaleTimeString()}
           </div>

@@ -192,6 +192,8 @@ export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
               onMouseOver={() => setHoveredStop(index)}
               onMouseOut={() => setHoveredStop(null)}
               nextStop={index < trip.route.length - 1 ? trip.route[index + 1] : undefined}
+              isFirstStop={index === 0}
+              isLastStop={index === trip.route.length - 1}
             />
           ))}
 

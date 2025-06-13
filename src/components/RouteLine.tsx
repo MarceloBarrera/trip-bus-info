@@ -95,7 +95,8 @@ export const RouteLine = ({ route, directionsService, directionsRenderer }: Rout
             wordBreak: "break-word",
           }}
         >
-          Warning: Using simplified route. Error: {error}
+          Warning: Using simplified route.
+          {/* Error: {error} */}
         </div>
       )}
     </>

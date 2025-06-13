@@ -31,6 +31,16 @@ export const BusMarker = ({
     minute: "2-digit",
   });
 
+  // Calculate estimated arrival time at final destination
+  const getEstimatedArrival = () => {
+    const scheduledArrival = new Date(destination.departure.scheduled);
+    const estimatedArrival = new Date(scheduledArrival.getTime() + delay);
+    return estimatedArrival.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   // Find the next stop based on the bus's current position
   const findNextStop = () => {
     if (!vehicle.gps) return null;
@@ -112,6 +122,23 @@ export const BusMarker = ({
               )}
             </div>
           )}
+          <div
+            style={{
+              marginTop: "8px",
+              paddingTop: "8px",
+              borderTop: "1px solid #eee",
+              fontSize: "13px",
+              color: "#666",
+            }}
+          >
+            <div style={{ fontWeight: "500", marginBottom: "4px" }}>
+              Final Destination: {destination.location.name}
+            </div>
+            <div>Scheduled: {new Date(destination.departure.scheduled).toLocaleTimeString()}</div>
+            <div style={{ color: delay !== 0 ? (delay > 0 ? "#FF4444" : "#44BB44") : "#666" }}>
+              Estimated: {getEstimatedArrival()}
+            </div>
+          </div>
           {delay !== 0 && (
             <div
               style={{

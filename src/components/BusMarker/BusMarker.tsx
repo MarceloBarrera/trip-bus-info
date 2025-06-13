@@ -31,6 +31,28 @@ export const BusMarker = ({
     minute: "2-digit",
   });
 
+  // Find the next stop based on the bus's current position
+  const findNextStop = () => {
+    if (!vehicle.gps) return null;
+
+    // Find the last passed stop
+    const lastPassedStopIndex = route.findIndex((stop) => {
+      const stopTime = new Date(stop.departure.scheduled).getTime();
+      const currentTime = new Date(vehicle.gps.last_updated).getTime();
+      return stopTime > currentTime;
+    });
+
+    // If we found a stop that hasn't been passed yet, return it
+    if (lastPassedStopIndex !== -1) {
+      return route[lastPassedStopIndex];
+    }
+
+    // If all stops have been passed, return null
+    return null;
+  };
+
+  const nextStop = findNextStop();
+
   return (
     <div>
       <OverlayView position={position} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
@@ -71,6 +93,25 @@ export const BusMarker = ({
             {vehicle.wheelchair > 0 && ` ${vehicle.wheelchair} Wheelchair spaces`}
             {vehicle.bicycle > 0 && ` ${vehicle.bicycle} Bike spaces`}
           </div>
+          {nextStop && (
+            <div
+              style={{
+                marginTop: "8px",
+                paddingTop: "8px",
+                borderTop: "1px solid #eee",
+                fontSize: "13px",
+                color: "#666",
+              }}
+            >
+              <div style={{ fontWeight: "500", marginBottom: "4px" }}>
+                Next Stop: {nextStop.location.name}
+              </div>
+              <div>Scheduled: {new Date(nextStop.departure.scheduled).toLocaleTimeString()}</div>
+              {nextStop.departure.estimated && (
+                <div>Estimated: {new Date(nextStop.departure.estimated).toLocaleTimeString()}</div>
+              )}
+            </div>
+          )}
           {delay !== 0 && (
             <div
               style={{

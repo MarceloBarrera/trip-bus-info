@@ -7,9 +7,16 @@ interface StopMarkerProps {
   isHovered: boolean;
   onMouseOver: () => void;
   onMouseOut: () => void;
+  nextStop?: Stop;
 }
 
-export const StopMarker = ({ stop, isHovered, onMouseOver, onMouseOut }: StopMarkerProps) => {
+export const StopMarker = ({
+  stop,
+  isHovered,
+  onMouseOver,
+  onMouseOut,
+  nextStop,
+}: StopMarkerProps) => {
   return (
     <div>
       <OverlayView
@@ -52,6 +59,29 @@ export const StopMarker = ({ stop, isHovered, onMouseOver, onMouseOut }: StopMar
             <div style={{ fontSize: "13px", color: "#666" }}>
               Estimated: {new Date(stop.departure.estimated).toLocaleTimeString()}
             </div>
+          )}
+          {nextStop && (
+            <>
+              <div
+                style={{
+                  marginTop: "8px",
+                  paddingTop: "8px",
+                  borderTop: "1px solid #eee",
+                  fontSize: "13px",
+                  color: "#666",
+                }}
+              >
+                Next Stop: {nextStop.location.name}
+              </div>
+              <div style={{ fontSize: "13px", color: "#666" }}>
+                Scheduled: {new Date(nextStop.departure.scheduled).toLocaleTimeString()}
+                {nextStop.departure.estimated && (
+                  <div>
+                    Estimated: {new Date(nextStop.departure.estimated).toLocaleTimeString()}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </InfoPanel>
       )}

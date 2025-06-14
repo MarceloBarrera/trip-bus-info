@@ -8,9 +8,9 @@ interface BusMarkerProps {
     lng: number;
   };
   vehicle: Vehicle;
-  isHovered: boolean;
-  onMouseOver: () => void;
-  onMouseOut: () => void;
+  onSelected?: () => void;
+  onClose: () => void;
+  isSelected?: boolean;
   delay: number;
   route: Stop[];
 }
@@ -18,9 +18,9 @@ interface BusMarkerProps {
 export const BusMarker = ({
   position,
   vehicle,
-  isHovered,
-  onMouseOver,
-  onMouseOut,
+  onSelected,
+  onClose,
+  isSelected,
   delay,
   route,
 }: BusMarkerProps) => {
@@ -77,15 +77,14 @@ export const BusMarker = ({
             cursor: "pointer",
             boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
             transition: "all 0.2s ease",
-            transform: isHovered ? "scale(1.2)" : "scale(1)",
+            transform: isSelected ? "scale(1.2)" : "scale(1)",
           }}
-          onMouseOver={onMouseOver}
-          onMouseOut={onMouseOut}
+          onClick={onSelected}
         />
       </OverlayView>
 
-      {isHovered && (
-        <InfoPanel position={position}>
+      {isSelected && (
+        <InfoPanel position={position} onClose={onClose}>
           <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{vehicle.name}</div>
           <div style={{ fontSize: "13px", color: "#333", marginBottom: "4px" }}>
             {departureTime} from {origin.location.name} to {destination.location.name}

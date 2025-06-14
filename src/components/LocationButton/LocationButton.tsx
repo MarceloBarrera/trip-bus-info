@@ -10,7 +10,7 @@ interface LocationButtonProps {
 export const LocationButton = ({ mapRef }: LocationButtonProps) => {
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(null);
   const [userLocationError, setUserLocationError] = useState<string | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
 
   const handleShowMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -87,15 +87,15 @@ export const LocationButton = ({ mapRef }: LocationButtonProps) => {
               strokeWeight: 2,
             }}
             title="My Location"
-            onMouseOver={() => setIsHovered(true)}
-            onMouseOut={() => setIsHovered(false)}
+            onClick={() => setIsSelected(!isSelected)}
           />
-          {isHovered && (
+          {isSelected && (
             <InfoPanel
               position={{
                 lat: userLocation.lat(),
                 lng: userLocation.lng(),
               }}
+              onClose={() => setIsSelected(false)}
             >
               <div style={{ fontWeight: "bold", marginBottom: "8px" }}>My Location</div>
               <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>

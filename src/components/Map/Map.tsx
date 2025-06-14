@@ -22,8 +22,8 @@ interface MapProps {
 }
 
 export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
-  const [hoveredStop, setHoveredStop] = useState<number | null>(null);
-  const [hoveredBus, setHoveredBus] = useState(false);
+  const [selectedStopId, setSelectedStopId] = useState<number | null>(null);
+  const [isSelectedBus, setIsSelectedBus] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [directionsService, setDirectionsService] = useState<google.maps.DirectionsService | null>(
     null
@@ -188,9 +188,9 @@ export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
             <StopMarker
               key={stop.id}
               stop={stop}
-              isHovered={hoveredStop === index}
-              onMouseOver={() => setHoveredStop(index)}
-              onMouseOut={() => setHoveredStop(null)}
+              isSelected={selectedStopId === stop.id}
+              onSelected={(id) => setSelectedStopId(id)}
+              onClose={() => setSelectedStopId(null)}
               nextStop={index < trip.route.length - 1 ? trip.route[index + 1] : undefined}
               isFirstStop={index === 0}
               isLastStop={index === trip.route.length - 1}
@@ -202,9 +202,9 @@ export const Map = ({ trip, isBusLocationOutdated }: MapProps) => {
             <BusMarker
               position={busPosition}
               vehicle={trip.vehicle}
-              isHovered={hoveredBus}
-              onMouseOver={() => setHoveredBus(true)}
-              onMouseOut={() => setHoveredBus(false)}
+              isSelected={isSelectedBus}
+              onSelected={() => setIsSelectedBus(!isSelectedBus)}
+              onClose={() => setIsSelectedBus(false)}
               delay={delay}
               route={trip.route}
             />

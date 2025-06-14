@@ -4,9 +4,9 @@ import { InfoPanel } from "./InfoPanel/InfoPanel";
 
 interface StopMarkerProps {
   stop: Stop;
-  isHovered: boolean;
-  onMouseOver: () => void;
-  onMouseOut: () => void;
+  onSelected?: (stopId: number) => void;
+  onClose: () => void;
+  isSelected?: boolean;
   nextStop?: Stop;
   isFirstStop?: boolean;
   isLastStop?: boolean;
@@ -15,23 +15,23 @@ interface StopMarkerProps {
 const getBackgroundColor = ({
   isFirstStop,
   isLastStop,
-  isHovered,
+  isSelected,
 }: {
   isFirstStop: boolean;
   isLastStop: boolean;
-  isHovered: boolean;
+  isSelected: boolean;
 }): string => {
   if (isFirstStop) return "#9C27B0";
   if (isLastStop) return "#FF9800";
-  if (isHovered) return "#2E5CB8";
+  if (isSelected) return "#2E5CB8";
   return "#4A90E2";
 };
 
 export const StopMarker = ({
   stop,
-  isHovered,
-  onMouseOver,
-  onMouseOut,
+  onSelected,
+  onClose,
+  isSelected,
   nextStop,
   isFirstStop,
   isLastStop,
@@ -54,25 +54,25 @@ export const StopMarker = ({
             backgroundColor: getBackgroundColor({
               isFirstStop: !!isFirstStop,
               isLastStop: !!isLastStop,
-              isHovered,
+              isSelected: !!isSelected,
             }),
             border: "2px solid white",
             cursor: "pointer",
             boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
             transition: "all 0.2s ease",
-            transform: isHovered ? "scale(1.2)" : "scale(1)",
+            transform: isSelected ? "scale(1.2)" : "scale(1)",
           }}
-          onMouseOver={onMouseOver}
-          onMouseOut={onMouseOut}
+          onClick={() => onSelected?.(stop.id)}
         />
       </OverlayView>
 
-      {isHovered && (
+      {isSelected && (
         <InfoPanel
           position={{
             lat: stop.location.lat,
             lng: stop.location.lon,
           }}
+          onClose={onClose}
         >
           <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
             {stop.location.name}

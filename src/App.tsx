@@ -3,6 +3,7 @@ import { Map } from "./components/Map/Map";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { OfflineMessage } from "./components/OfflineMessage/OfflineMessage";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -47,32 +48,6 @@ function useTripData(tripId: string) {
       return response.json();
     },
   });
-}
-
-function OfflineMessage() {
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: "60px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        backgroundColor: "#f8d7da",
-        color: "#721c24",
-        padding: "10px 20px",
-        borderRadius: "4px",
-        zIndex: 1000,
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        textAlign: "center",
-        maxWidth: "80%",
-      }}
-    >
-      <strong>⚠️ You are offline</strong>
-      <p style={{ margin: "5px 0 0 0", fontSize: "0.9em" }}>
-        Some features may be limited. The map will show the last known position of the bus.
-      </p>
-    </div>
-  );
 }
 
 function TripMap() {

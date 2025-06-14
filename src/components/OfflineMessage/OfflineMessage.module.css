@@ -1,0 +1,19 @@
+.offlineMessage {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px 20px;
+  border-radius: 4px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 80%;
+}
+
+.message {
+  margin: 5px 0 0 0;
+  font-size: 0.9em;
+}

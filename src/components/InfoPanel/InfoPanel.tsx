@@ -1,5 +1,5 @@
 import { OverlayView } from "@react-google-maps/api";
-import "./InfoPanel.css";
+import styles from "./InfoPanel.module.css";
 
 interface InfoPanelProps {
   position: {
@@ -14,7 +14,7 @@ export const InfoPanel = ({ position, children, onClose }: InfoPanelProps) => {
   return (
     <>
       <OverlayView position={position} mapPaneName={OverlayView.FLOAT_PANE}>
-        <div className="info-panel">{children}</div>
+        <div className={styles.infoPanel}>{children}</div>
       </OverlayView>
 
       <div

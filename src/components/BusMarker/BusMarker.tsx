@@ -1,6 +1,7 @@
 import { OverlayView } from "@react-google-maps/api";
 import type { Vehicle, Stop } from "../../types/trip";
 import { InfoPanel } from "../InfoPanel/InfoPanel";
+import styles from "./BusMarker.module.css";
 
 interface BusMarkerProps {
   position: {
@@ -89,38 +90,50 @@ export const BusMarker = ({
           <div style={{ fontSize: "13px", color: "#333", marginBottom: "4px" }}>
             {departureTime} from {origin.location.name} to {destination.location.name}
           </div>
-          <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
-            Type: {vehicle.type}
-          </div>
-          <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
-            Capacity: {vehicle.seat} seats
-          </div>
-          <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
-            Features:
-            {vehicle.has_wifi && " WiFi"}
-            {vehicle.has_toilet && " Toilet"}
-            {vehicle.wheelchair > 0 && ` ${vehicle.wheelchair} Wheelchair spaces`}
-            {vehicle.bicycle > 0 && ` ${vehicle.bicycle} Bike spaces`}
-          </div>
-          {nextStop && (
-            <div
-              style={{
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid #eee",
-                fontSize: "13px",
-                color: "#666",
-              }}
-            >
-              <div style={{ fontWeight: "500", marginBottom: "4px" }}>
-                Next Stop: {nextStop.location.name}
-              </div>
-              <div>Scheduled: {new Date(nextStop.departure.scheduled).toLocaleTimeString()}</div>
-              {nextStop.departure.estimated && (
-                <div>Estimated: {new Date(nextStop.departure.estimated).toLocaleTimeString()}</div>
-              )}
+          <div className={styles.desktopOnly}>
+            <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
+              Type: {vehicle.type}
             </div>
-          )}
+            <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
+              Capacity: {vehicle.seat} seats
+            </div>
+            <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
+              Features:
+              {vehicle.has_wifi && " WiFi"}
+              {vehicle.has_toilet && " Toilet"}
+              {vehicle.wheelchair > 0 && ` ${vehicle.wheelchair} Wheelchair spaces`}
+              {vehicle.bicycle > 0 && ` ${vehicle.bicycle} Bike spaces`}
+            </div>
+            {nextStop && (
+              <div
+                style={{
+                  marginTop: "8px",
+                  paddingTop: "8px",
+                  borderTop: "1px solid #eee",
+                  fontSize: "13px",
+                  color: "#666",
+                }}
+              >
+                <div style={{ fontWeight: "500", marginBottom: "4px" }}>
+                  Next Stop: {nextStop.location.name}
+                </div>
+                <div>Scheduled: {new Date(nextStop.departure.scheduled).toLocaleTimeString()}</div>
+                {nextStop.departure.estimated && (
+                  <div>
+                    Estimated: {new Date(nextStop.departure.estimated).toLocaleTimeString()}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <div className={styles.mobileOnly}>
+            <div style={{ fontSize: "13px", color: "#666", marginBottom: "4px" }}>
+              {vehicle.type} • {vehicle.has_wifi && "WiFi "}
+              {vehicle.has_toilet && "Toilet "}
+              {vehicle.wheelchair > 0 && `${vehicle.wheelchair}♿ `}
+              {vehicle.bicycle > 0 && `${vehicle.bicycle}🚲`}
+            </div>
+          </div>
           <div
             style={{
               marginTop: "8px",

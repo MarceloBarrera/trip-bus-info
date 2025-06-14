@@ -1,4 +1,4 @@
-.info-panel {
+.infoPanel {
   background-color: white;
   padding: 12px;
   border-radius: 8px;
@@ -12,8 +12,8 @@
 }
 
 @media (max-width: 600px) {
-  .info-panel {
-    min-width: 150px;
+  .infoPanel {
+    min-width: 180px;
     max-width: 200px;
     padding: 8px;
     font-size: 0.9em;

@@ -4,8 +4,7 @@ import { mockTrip } from "../../mocks/mockTrip";
 import { Map } from "./Map";
 
 // Mock all Google Maps related modules
-vi.mock("@react-google-maps/api", async (importOriginal) => ({
-  ...(await importOriginal()),
+vi.mock("@react-google-maps/api", () => ({
   useJsApiLoader: () => ({
     isLoaded: true,
     loadError: undefined,
@@ -13,9 +12,7 @@ vi.mock("@react-google-maps/api", async (importOriginal) => ({
   GoogleMap: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="google-map">{children}</div>
   ),
-  OverlayView: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="overlay">{children}</div>
-  ),
+  Marker: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   Polyline: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="polyline">{children}</div>
   ),
@@ -37,6 +34,17 @@ vi.stubGlobal("google", {
     },
     MapTypeControlStyle: {
       DROPDOWN_MENU: 2,
+    },
+    SymbolPath: {
+      CIRCLE: 0,
+      FORWARD_CLOSED_ARROW: 1,
+      FORWARD_OPEN_ARROW: 2,
+      BACKWARD_CLOSED_ARROW: 3,
+      BACKWARD_OPEN_ARROW: 4,
+    },
+    Marker: class {
+      constructor() {}
+      setMap() {}
     },
   },
 });

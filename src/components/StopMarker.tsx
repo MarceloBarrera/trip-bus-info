@@ -1,6 +1,11 @@
-import { OverlayView } from "@react-google-maps/api";
+import { Marker } from "@react-google-maps/api";
 import type { Stop } from "../types/trip";
 import { InfoPanel } from "./InfoPanel/InfoPanel";
+
+// TODO: Migrate to AdvancedMarkerElement when available in @react-google-maps/api
+// As of February 21st, 2024, google.maps.Marker is deprecated.
+// AdvancedMarkerElement will provide better performance and features.
+// https://github.com/JustFly1984/react-google-maps-api/issues?q=is%3Aissue%20state%3Aopen%20AdvancedMarkerElement
 
 interface StopMarkerProps {
   stop: Stop;
@@ -38,33 +43,28 @@ export const StopMarker = ({
 }: StopMarkerProps) => {
   return (
     <div>
-      <OverlayView
-        position={{
-          lat: stop.location.lat,
-          lng: stop.location.lon,
-        }}
-        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-      >
-        <div
-          data-testid="stop-marker"
-          style={{
-            width: "24px",
-            height: "24px",
-            borderRadius: "50%",
-            backgroundColor: getBackgroundColor({
+      <div data-testid="stop-marker">
+        <Marker
+          position={{
+            lat: stop.location.lat,
+            lng: stop.location.lon,
+          }}
+          icon={{
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: getBackgroundColor({
               isFirstStop: !!isFirstStop,
               isLastStop: !!isLastStop,
               isSelected: !!isSelected,
             }),
-            border: "2px solid white",
-            cursor: "pointer",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-            transition: "all 0.2s ease",
-            transform: isSelected ? "scale(1.2)" : "scale(1)",
+            fillOpacity: 1,
+            strokeColor: "white",
+            strokeWeight: 2,
           }}
+          clickable={true}
           onClick={() => onSelected?.(stop.id)}
         />
-      </OverlayView>
+      </div>
 
       {isSelected && (
         <InfoPanel
@@ -104,10 +104,12 @@ export const StopMarker = ({
                   color: "#666",
                 }}
               >
-                Next Stop: {nextStop.location.name}
-              </div>
-              <div style={{ fontSize: "13px", color: "#666" }}>
-                Scheduled: {new Date(nextStop.departure.scheduled).toLocaleTimeString()}
+                <div style={{ fontWeight: "500", marginBottom: "4px" }}>
+                  Next Stop: {nextStop.location.name}
+                </div>
+                <div style={{ fontSize: "13px", color: "#666" }}>
+                  Scheduled: {new Date(nextStop.departure.scheduled).toLocaleTimeString()}
+                </div>
                 {nextStop.departure.estimated && (
                   <div>
                     Estimated: {new Date(nextStop.departure.estimated).toLocaleTimeString()}

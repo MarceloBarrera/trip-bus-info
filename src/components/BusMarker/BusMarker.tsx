@@ -1,4 +1,4 @@
-import { OverlayView } from "@react-google-maps/api";
+import { Marker } from "@react-google-maps/api";
 import type { Vehicle, Stop } from "../../types/trip";
 import { InfoPanel } from "../InfoPanel/InfoPanel";
 import styles from "./BusMarker.module.css";
@@ -66,23 +66,20 @@ export const BusMarker = ({
 
   return (
     <div>
-      <OverlayView position={position} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
-        <div
-          data-testid="bus-marker"
-          style={{
-            width: "24px",
-            height: "24px",
-            borderRadius: "50%",
-            backgroundColor: "#FF0000",
-            border: "2px solid white",
-            cursor: "pointer",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-            transition: "all 0.2s ease",
-            transform: isSelected ? "scale(1.2)" : "scale(1)",
-          }}
+      <div data-testid="bus-marker">
+        <Marker
+          position={position}
           onClick={onSelected}
+          icon={{
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 12,
+            fillColor: "#FF0000",
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+          }}
         />
-      </OverlayView>
+      </div>
 
       {isSelected && (
         <InfoPanel position={position} onClose={onClose}>

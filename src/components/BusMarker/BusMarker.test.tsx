@@ -5,10 +5,20 @@ import { mockTrip } from "../../mocks/mockTrip";
 
 // Mock the Google Maps API
 vi.mock("@react-google-maps/api", () => ({
+  Marker: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
   OverlayView: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="overlay">{children}</div>
   ),
 }));
+
+// Mock google object
+vi.stubGlobal("google", {
+  maps: {
+    SymbolPath: {
+      CIRCLE: 0,
+    },
+  },
+});
 
 describe("BusMarker Component", () => {
   const defaultProps = {
@@ -23,7 +33,7 @@ describe("BusMarker Component", () => {
 
   it("renders without crashing", () => {
     render(<BusMarker {...defaultProps} />);
-    expect(screen.getByTestId("overlay")).toBeInTheDocument();
+    expect(screen.getByTestId("bus-marker")).toBeInTheDocument();
   });
 
   it("shows vehicle info when selected", () => {
